@@ -31,19 +31,19 @@ class Producer(Thread):
         @type kwargs:
         @param kwargs: other arguments that are passed to the Thread's __init__()
         """
-        Thread.__init__(self, daemon = kwargs['daemon']) # de testat fara daemon = 
+        Thread.__init__(self, **kwargs) # de testat fara daemon = 
         self.products = products
         self.marketplace = marketplace
         self.republish_wait_time = republish_wait_time
-        pass
 
     def run(self):
-        pass
         id = self.marketplace.register_producer()
 
-        for (product, quantity, time) in self.products:
-            sleep(self.republish_wait_time)
-            
-            for i in range(quantity):
-                if self.marketplace.publish(id, product) == False:
-                    sleep(time)
+        while True:
+            for (product, quantity, time) in self.products:
+                sleep(time)
+                for i in range(quantity):
+                    while self.marketplace.publish(id, product) is False:
+                        sleep(self.republish_wait_time)
+                    # print("Producer " + str(id) + " published " + str(product))
+                    # print(str(id) + ": " + str(self.marketplace.available_products[id]))
