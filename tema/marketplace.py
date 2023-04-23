@@ -17,8 +17,6 @@ class Marketplace:
     Class that represents the Marketplace. It's the central part of the implementation.
     The producers and consumers use its methods concurrently.
     """
-    curr_prod_id = 0
-    curr_cons_id = 0
 
     def __init__(self, queue_size_per_producer):
         """
@@ -29,9 +27,13 @@ class Marketplace:
         """
         self.queue_size_per_producer = queue_size_per_producer
 
+        # Synchronization variables
         self.lock_producer_id = Lock()
         self.lock_consumer_id = Lock()
-        self.lock_data_structures = Lock()
+        self.lock_add_products = Lock()
+        self.lock_remove_products = Lock()
+
+        # Data structures to store the products
         self.available_products = {} # dictionary of the form (producer_id : [products])
         self.carts = {} # dictionary of the form (cart_id : (producer_id : [products]))
 
@@ -40,9 +42,12 @@ class Marketplace:
         Returns an id for the producer that calls this.
         """
         with self.lock_producer_id:
-            Marketplace.curr_prod_id = Marketplace.curr_prod_id + 1
-            self.available_products[Marketplace.curr_prod_id] = []
-            return Marketplace.curr_prod_id
+            new_id = 0
+            while True:
+                new_id = new_id + 1
+                if new_id not in list(self.available_products.keys()):
+                    self.available_products[new_id] = []
+                    return new_id
 
     def publish(self, producer_id, product):
         """
@@ -56,7 +61,7 @@ class Marketplace:
 
         :returns True or False. If the caller receives False, it should wait and then try again.
         """
-        with self.lock_data_structures:
+        with self.lock_add_products:
             if len(self.available_products[producer_id]) >= self.queue_size_per_producer:
                 return False
             self.available_products[producer_id].append(product)
@@ -69,10 +74,12 @@ class Marketplace:
         :returns an int representing the cart_id
         """
         with self.lock_consumer_id:
-            Marketplace.curr_cons_id = Marketplace.curr_cons_id + 1
-            self.carts[Marketplace.curr_cons_id] = {}
-            return Marketplace.curr_cons_id
-            
+            new_id = 0
+            while True:
+                new_id = new_id + 1
+                if new_id not in list(self.carts.keys()):
+                    self.carts[new_id] = {}
+                    return new_id
 
     def add_to_cart(self, cart_id, product):
         """
@@ -86,7 +93,8 @@ class Marketplace:
 
         :returns True or False. If the caller receives False, it should wait and then try again
         """
-        with self.lock_data_structures:
+        with self.lock_remove_products:
+            # we cannot iterate over self.available_products, since it changes during the loop
             aux = deepcopy(self.available_products)
             for i in aux.keys():
                 if product in aux[i] and product in self.available_products[i]:
@@ -95,10 +103,8 @@ class Marketplace:
                         self.carts[cart_id][i].append(product)
                     except KeyError:
                         self.carts[cart_id][i] = [product]
-                    # print("Consumer " + str(cart_id) + " bought " + str(product))
-                    # print("carts: " + str(self.carts))
                     return True
-        
+
         # the product has not been found
         return False
 
@@ -112,15 +118,14 @@ class Marketplace:
         :type product: Product
         :param product: the product to remove from cart
         """
-        with self.lock_data_structures:
+        with self.lock_add_products:
             aux = deepcopy(self.carts[cart_id])
             for i in aux.keys():
                 if product in aux[i]:
-                    # we do not care about the number of products already published by the producer
+                    # even if producer's queue is full, we must insert the consumer's product
                     self.carts[cart_id][i].remove(product)
                     self.available_products[i].append(product)
-                    # print("Consumer " + str(cart_id) + " quit product " + str(product))
-                    # print("carts: " + str(self.carts))
+                    return
 
     def place_order(self, cart_id):
         """
@@ -130,5 +135,5 @@ class Marketplace:
         :param cart_id: id cart
         """
         lst = reduce(lambda acc, elem: acc + elem, list(self.carts[cart_id].values()))
-        self.carts.__delitem__(cart_id)  # delete the cart associated with cart_id
+        del self.carts[cart_id]  # delete the cart associated with cart_id
         return lst

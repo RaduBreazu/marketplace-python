@@ -3,7 +3,7 @@
 SRC=tema
 TESTS=tests
 OUT=out
-PYTHON_CMD=python3
+PYTHON_CMD=python3.10
 
 for i in {1..8}
 do
@@ -36,4 +36,4 @@ done
 
 # Pylint checks - the pylintrc file being in the same directory
 # Uncoment the following line to check your implementation's code style :)
-# ${PYTHON_CMD} -m pylint ${SRC}/*.py
+${PYTHON_CMD} -m pylint ${SRC}/*.py

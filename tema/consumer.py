@@ -13,7 +13,7 @@ class Consumer(Thread):
     """
     Class that represents a consumer.
     """
-    print_lock = Lock()
+    print_lock = Lock() # the consumers must share the same lock
 
     def __init__(self, carts, marketplace, retry_wait_time, **kwargs):
         """
@@ -34,25 +34,32 @@ class Consumer(Thread):
         """
         Thread.__init__(self, **kwargs)
         self.name = kwargs['name']
-        self.ops = carts
+        self.carts = carts
         self.marketplace = marketplace
         self.retry_wait_time = retry_wait_time
 
     def run(self):
-        for elem in self.ops:
+        for cart in self.carts:
             cart_id = self.marketplace.new_cart()
 
-            for dictionary in elem:
-                for i in range(dictionary["quantity"]):
-                    match (dictionary["type"]):
-                        case "add":
-                            while self.marketplace.add_to_cart(cart_id, dictionary["product"]) is False:
+            for operation in cart:
+                op_type = operation["type"]
+                quantity = operation["quantity"]
+                prod = operation["product"]
+
+                match (op_type):
+                    case "add":
+                        for i in range(quantity):
+                            # try adding the product to cart until it becomes available
+                            while self.marketplace.add_to_cart(cart_id, prod) is False:
                                 sleep(self.retry_wait_time)
-                        case "remove":
-                            self.marketplace.remove_from_cart(cart_id, dictionary["product"])
-                
+                    case "remove":
+                        for i in range(quantity):
+                            self.marketplace.remove_from_cart(cart_id, prod)
+
+            # place order and print every product from cart numbered cart_id
             products = self.marketplace.place_order(cart_id)
-            # access cart numbered cart_id and print every product you find there
+
             with Consumer.print_lock:
-                for product in products:
-                    print(self.name + " bought " + str(product))
+                for prod in products:
+                    print(self.name + " bought " + str(prod))
