@@ -47,15 +47,14 @@ class Consumer(Thread):
                 quantity = operation["quantity"]
                 prod = operation["product"]
 
-                match (op_type):
-                    case "add":
-                        for i in range(quantity):
-                            # try adding the product to cart until it becomes available
-                            while self.marketplace.add_to_cart(cart_id, prod) is False:
-                                sleep(self.retry_wait_time)
-                    case "remove":
-                        for i in range(quantity):
-                            self.marketplace.remove_from_cart(cart_id, prod)
+                if op_type == "add":
+                    for i in range(quantity):
+                        # try adding the product to cart until it becomes available
+                        while self.marketplace.add_to_cart(cart_id, prod) is False:
+                            sleep(self.retry_wait_time)
+                elif op_type == "remove":
+                    for i in range(quantity):
+                        self.marketplace.remove_from_cart(cart_id, prod)
 
             # place order and print every product from cart numbered cart_id
             products = self.marketplace.place_order(cart_id)

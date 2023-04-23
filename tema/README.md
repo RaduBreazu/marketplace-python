@@ -139,3 +139,6 @@ Pe lângă link-urile deja menționate, am folosit
 și tutoriale de pe 
 [programiz](https://www.programiz.com/python-programming) pentru a mă acomoda
 mai bine cu sintaxa limbajului.
+Pentru realizarea logging-ului, am folosit
+[documentația oficială](https://docs.python.org/3/howto/logging.html),
+împreună cu [RotatingFileHandler](https://docs.python.org/3/library/logging.handlers.html#logging.handlers.RotatingFileHandler).
