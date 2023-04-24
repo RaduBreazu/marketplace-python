@@ -17,8 +17,8 @@ livrarea acestuia.
 
 #### _Soluția pentru consumator_
 Consumatorul iterează prin lista sa de coșuri de cumpărături, și, pentru
-fiecare coș, își ia un ID, iterează prin lista de operații reprezentată de
-`cart` și execută operațiile întâlnite acolo. Odată ce coșul de cumpărături
+fiecare coș, își ia un ID, iterează prin lista de acțiuni reprezentată de
+`cart` și execută acțiunile întâlnite acolo. Odată ce coșul de cumpărături
 are componența dorită, consumatorul își plasează comanda, și astfel produsele
 sunt cumpărate.
 
@@ -74,8 +74,8 @@ nu s-ar mai realiza sincronizarea).
     consumatorului sau a producătorului să aștepte, dacă este necesar)
 
 Metoda `place_order` este sincronizată în mod implicit, datorită faptului că
-2 consumatori își pot plasa comenzile în același timp, indiferent de acțiunile
-producătorilor, fără a apărea vreo problemă de sincronizare (consumatorii nu
+2 consumatori își pot plasa comenzile în același timp, indiferent de ce fac
+producătorii, fără a apărea vreo problemă de sincronizare (consumatorii nu
 pot avea același ID pentru coșurile de cumpărături, astfel că se încearcă
 eliminarea unor intrări -- entries -- corespunzătoare unor chei diferite).
 
@@ -83,10 +83,10 @@ eliminarea unor intrări -- entries -- corespunzătoare unor chei diferite).
 
 1. Clasa `Consumer`
 
-    Pentru eficientizare, la iterarea prin `cart`, tipul operației este
+    Pentru eficientizare, la iterarea prin `cart`, tipul acțiunii este
     accesat o singură dată, la declanșarea sa (i.e. doar atunci când se schimbă
-    operația de efectuat). Totodată, pentru a garanta rezervarea unui produs,
-    în cazul operației `add`, se încearcă luarea acestuia până când este găsit
+    acțiunea de efectuat). Totodată, pentru a garanta rezervarea unui produs,
+    în cazul acțiunii `add`, se încearcă luarea acestuia până când este găsit
     în stoc.
 
 2. Clasa `Producer`

@@ -125,6 +125,7 @@ class Marketplace:
             # we cannot iterate over self.available_products, since it changes during the loop
             aux = deepcopy(self.available_products)
             for i in aux.keys():
+                # try to find the product in one of the producers' queues
                 if product in aux[i] and product in self.available_products[i]:
                     self.available_products[i].remove(product)
                     try:
@@ -155,6 +156,7 @@ class Marketplace:
 
             aux = deepcopy(self.carts[cart_id])
             for i in aux.keys():
+                # find the consumer's product (it must exist in the cart)
                 if product in aux[i]:
                     # even if producer's queue is full, we must insert the consumer's product
                     self.carts[cart_id][i].remove(product)
