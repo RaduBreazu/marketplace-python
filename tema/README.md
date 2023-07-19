@@ -106,6 +106,7 @@ eliminarea unor intrări -- entries -- corespunzătoare unor chei diferite).
     program ce-și propune a implementa un algoritm folositor în viața reală
 
 **Funcționalități extra**
+
 După cum am precizat și mai sus, în plus față de funcționalitățile standard, am
 implementat și refolosirea ID-urilor atribuite producătorilor și coșurilor de
 cumpărături. Am vrut să fac acest lucru pentru a simula comportamentul unei
@@ -116,6 +117,7 @@ parcurge fluxul infinit al numerelor naturale până când se găsește primul n
 nefolosit în acest scop.
 
 **Dificultăți întâmpinate**
+
 Pe lângă familiarizarea cu sintaxa limbajului, cea mai mare dificultate pe care
 am avut-o a fost accea că, în timpul testării, mi-am dat seama că producătorii
 trebuie să-și producă bunurile într-o buclă infinită (inițial, plecasem de la
@@ -125,6 +127,7 @@ timp până să înțeleg cum funcționează parametrul `daemon` furnizat prin
 `kwargs` thread-urilor Producer.
 
 **Lucruri interesante descoperite**
+
 În timpul realizării temei, am descoperit (căutând pe Internet,
 [aici](https://www.programiz.com/python-programming/generator)) că se pot
 implementa fluxuri în Python, folosind generatori infiniți. Până la urmă, a
@@ -134,6 +137,7 @@ funcție, care, și dacă ar fi cache-uite -- cu @cache -- tot ar conduce la
 timeout, pe local, în cazul testului 10 -- am testat acest lucru).
 
 ## Resurse folosite
+
 Pe lângă link-urile deja menționate, am folosit
 [laboratorul 1 de ASC](https://ocw.cs.pub.ro/courses/asc/laboratoare/01)
 și tutoriale de pe 
